@@ -1,0 +1,28 @@
+
+html, body {
+    margin: 0;
+    height: 100%;
+    padding: 0%;
+}
+
+/*
+Source - https://stackoverflow.com/a/43169860
+Posted by Useless Code, modified by community. See post 'Timeline' for change history
+Retrieved 2026-05-29, License - CC BY-SA 4.0
+*/
+
+ table {
+ border-collapse: collapse;
+ }
+ tr:nth-child(even) {
+ background-color: rgb(168, 121, 214);
+ }
+ .category {
+ font-weight: bold;
+ }
+ td, th {
+ padding: .5em;
+ }
+ .days, .hours, .minutes, .seconds {
+ text-align: right;
+ }

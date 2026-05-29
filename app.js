@@ -1,0 +1,120 @@
+alert("Are You Ready for Halloween?!")
+
+// Source - https://stackoverflow.com/a/43169860
+// Posted by Useless Code, modified by community. See post 'Timeline' for change history
+// Retrieved 2026-05-29, License - CC BY-SA 4.0
+
+// data is an array of objects, each representing one of your categories.
+// Each category has a .title to store its title and a .counters that
+// stores an object for each counter in that category.
+var data = [
+  {
+title: 'ASTRONOMY',
+counters: [
+  // Each counter has a .title and a .date that is parsed by new Date()
+  {
+    title: 'Total Solar Eclipse - (NE US)',
+    date: 'August 21, 2026'
+  },
+  {
+    title: 'Next Supermoon - Full',
+    date: 'December 3, 2026'
+  }
+]
+  },
+  {
+title: 'Solstices',
+  counters: [
+    {
+      title: 'Next Summer Solstice',
+      date: 'June 21, 2026'
+    }
+  ]
+  },
+  {
+title: 'Equinoxes',
+counters: [
+  {
+    title: '30 seconds from page load',
+    date: (new Date()).getTime() + (30 * 1000)
+  },
+  {
+    title: 'Unix Epoch',
+    date: 'January 1, 1970'
+  }
+]
+  }
+];
+// this reduce generates the table
+let table = data.reduce((acc, category, categoryIndex) => {
+return acc + `<tr><td colspan="6" class="category">${category.title}</td></tr>` +
+category.counters.reduce((acc, counter, index) => {
+  return acc + `<tr id="counter-${categoryIndex}-${index}">
+  <td>${counter.title}</td>
+  <td>${counter.date}</td>
+  <td class="days"></td>
+  <td class="hours"></td>
+  <td class="minutes"></td>
+  <td class="seconds"></td>
+  </tr>`;
+  }, '');
+}, '<table class="countdown"><tr><th>Event</th><th>Date</th><th>Days</th><th>Hours</th><th>Minutes</th><th>Seconds</th></tr>');
+table += '</table>';
+
+// insert the table after the noscript tag
+document.getElementById('countdown').insertAdjacentHTML('afterend', table);
+
+// generate a flat list of counters
+let counters = data.reduce((acc, category, categoryIndex) => {
+return acc.concat(category.counters.reduce((counterAcc, counter, index) => {
+    return counterAcc.concat([{
+      // counters will be an array of the objects we generate here.
+      // node contains a reference to the tr element for this counter
+      node: document.getElementById(`counter-${categoryIndex}-${index}`),
+      // date is the date for this counter parsed by Date and then converted
+      // into a timestamp
+      date: (new Date(counter.date)).getTime()
+      }]);
+    }, []));
+}, []);
+
+const msSecond = 1000,
+  msMinute = msSecond * 60,
+  msHour = msMinute * 60,
+  msDay = msHour * 24;
+let intervalId;
+
+function updateCounters () {
+  counters.forEach((counter, counterIndex) => {
+  let remaining = counter.date - Date.now(),
+    node = counter.node;
+  let setText = (selector, text) => node.querySelector(selector).textContent = text;
+
+  if (remaining > 0) {
+    setText('.days', Math.floor(remaining / msDay));
+    remaining %= msDay;
+    setText('.hours', Math.floor(remaining / msHour));
+    remaining %= msHour;
+    setText('.minutes', Math.floor(remaining / msMinute));
+    remaining %= msMinute;
+    setText('.seconds', Math.floor(remaining / msSecond));
+  } else {
+    // make sure we don't accidentally display negative numbers if a timer
+    // firing late returns a past timestamp (or the data contains a past date)
+    setText('.days', 0);
+    setText('.hours', 0);
+    setText('.minutes', 0);
+    setText('.seconds', 0);
+
+    // This countdown has reached 0 seconds, stop updating it.
+    counters.splice(counterIndex, 1);
+    // no more counters? Stop the timer
+    if (counters.length === 0) {
+      clearInterval(intervalId);
+    }
+  }
+  });
+}
+// display counters right away without waiting a second
+updateCounters();
+intervalId = setInterval(updateCounters, 1000);
