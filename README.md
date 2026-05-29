@@ -1,3 +1,3 @@
-## SEASONAL CLOCK
-# Created using HTML, CSS, and JavaScript.
+# SEASONAL CLOCK
+## Created using HTML, CSS, and JavaScript.
 
